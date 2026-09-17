@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your rewards preference is Points — Tria</title>
+<meta name="description" content="How your eligible rewards are paid out each month.">
+<link rel="preload" href="assets/fonts/Geist-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Geist-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=12">
+</head>
+<body>
+
+  <div class="bg-layer" aria-hidden="true">
+    <img class="bg bg--mobile" src="assets/img/bg-mobile.svg" alt="" width="1400" height="935">
+    <img class="bg bg--desktop" src="assets/img/bg-desktop.svg" alt="" width="3000" height="2000">
+  </div>
+
+  <header class="header">
+    <div class="header__inner">
+      <a class="header__logo" href="index.html" aria-label="Tria — home">
+        <img src="assets/img/logo-tria.svg" alt="Tria" width="58" height="21">
+      </a>
+      <nav class="menu" aria-label="Main">
+        <a href="#">Full View</a>
+        <a href="#">Overview</a>
+        <a href="#">Blogs</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1 class="hero__title">Your Rewards Preference is <span class="accent">Points</span></h1>
+      <p class="hero__sub">How your eligible rewards are paid out each month.</p>
+    </section>
+
+    <section class="content content--flow">
+      <div class="stack">
+        <div class="status">
+          <div class="status__wrap">
+            <div class="status__head">
+              <div class="status__lines">
+                <div class="status__titleline">
+                  <h2 class="status__name">Points</h2>
+                  <span class="tag tag--rec">Active</span>
+                </div>
+                <p class="status__rate">100 points per $1</p>
+              </div>
+              <p class="status__desc">of eligible rewards, spendable in the marketplace</p>
+            </div>
+            <div class="divider"></div>
+            <div class="row"><span class="row__label">Active since</span><span class="row__value">1 Oct 2026</span></div>
+            <div class="row"><span class="row__label">Next distribution</span><span class="row__value">1 Nov 2026</span></div>
+            <div class="row"><span class="row__label">Points balance</span><span class="row__value row__value--accent">12,400 pts</span></div>
+          </div>
+        </div>
+        <div class="promo">
+          <div class="promo__wrap">
+            <div class="promo__head">
+              <h2 class="promo__title promo__title--block">Prefer Cashback instead?</h2>
+              <p class="promo__body">Switch to <b>$0.60</b> per <b>$1</b> of eligible rewards. Changes take effect from the next monthly distribution.</p>
+            </div>
+            <button class="btn btn--outline" type="button" data-open-modal aria-expanded="false">Switch to Cashback</button>
+          </div>
+        </div>
+      </div>
+      <div class="secondary">
+        <p class="footnote">Rates apply to eligible reward dollars, not card spending. You can switch to cashback anytime; changes take effect from the next monthly distribution.</p>
+      </div>
+    </section>
+
+    <section class="cta">
+      <a class="btn" href="index.html">Back to Tria</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__notches" aria-hidden="true">
+      <svg class="notch" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><path d="M0 0C0 44.1828 35.8172 80 80 80H0V0Z" fill="black"/></svg>
+      <svg class="notch" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><path d="M80 0C80 44.1828 44.1828 80 0 80H80V0Z" fill="black"/></svg>
+    </div>
+    <div class="footer__bar">
+      <img class="footer__mark" src="assets/img/wordmark-tria.svg" alt="Tria" width="58" height="30">
+    </div>
+  </footer>
+
+  <div class="modal" data-modal aria-hidden="true">
+    <div class="scrim" data-close></div>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <span class="sheet__grab" aria-hidden="true"></span>
+      <button class="sheet__close" type="button" data-close aria-label="Close">
+        <svg viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="26" height="26" rx="13" fill="white"/><path d="M17 9L13 13M9 17L13 13M13 13L9 9M13 13L17 17" stroke="black" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="sheet__wrap">
+        <div class="sheet__head">
+          <div class="sheet__titleline">
+            <h2 class="sheet__title" id="sheet-title">Switch to Cashback?</h2>
+          </div>
+          <p class="sheet__body">You&rsquo;ll receive <b>$0.60</b> per <b>$1</b> of eligible rewards instead of 100 points per $1.</p>
+        </div>
+        <div class="divider"></div>
+        <div class="row"><span class="row__label">Change takes effect</span><span class="row__value">1 Oct 2026</span></div>
+        <div class="row"><span class="row__label">October rewards paid as</span><span class="row__value">Points</span></div>
+        <div class="row"><span class="row__label">From November paid as</span><span class="row__value">Cashback</span></div>
+        <div class="sheet__buttons">
+          <a class="btn btn--white" href="preference-cashback.html">Confirm Switch to Cashback</a>
+          <button class="btn btn--ghost" type="button" data-close>Keep Points</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/flow.js?v=12"></script>
+</body>
+</html>

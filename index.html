@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tria — Choose how you receive your rewards</title>
+<meta name="description" content="Turn your rewards into marketplace points or receive cashback.">
+<link rel="preload" href="assets/fonts/Geist-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Geist-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=12">
+</head>
+<body data-choice="points">
+
+  <div class="bg-layer" aria-hidden="true">
+    <img class="bg bg--mobile" src="assets/img/bg-mobile.svg" alt="" width="1400" height="935">
+    <img class="bg bg--desktop" src="assets/img/bg-desktop.svg" alt="" width="3000" height="2000">
+  </div>
+
+  <header class="header">
+    <div class="header__inner">
+      <a class="header__logo" href="#" aria-label="Tria — home">
+        <img src="assets/img/logo-tria.svg" alt="Tria" width="58" height="21">
+      </a>
+      <nav class="menu" aria-label="Main">
+        <a href="#">Full View</a>
+        <a href="#">Overview</a>
+        <a href="#">Blogs</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1 class="hero__title" data-title>Get More From Your Rewards With <span class="accent">Points</span></h1>
+      <p class="hero__sub" data-sub>Turn your rewards into marketplace points.</p>
+    </section>
+
+    <section class="content">
+      <div class="options" role="radiogroup" aria-label="Reward payout method">
+
+        <label class="option option--points is-selected" data-option="points">
+          <input class="option__input" type="radio" name="payout" value="points" checked>
+
+          <span class="tiles" data-gallery>
+            <!-- previous slide, minimised + dimmed; hidden on the first slide, per Figma -->
+            <span class="peek peek--prev" aria-hidden="true">
+              <img src="assets/img/tile-travel.webp" alt="" data-peek="0">
+              <img src="assets/img/tile-tickets.webp" alt="" data-peek="1">
+              <img src="assets/img/tile-experiences.webp" alt="" data-peek="2">
+            </span>
+
+            <span class="tiles__strip">
+              <span class="track" data-track>
+                <span class="slide">
+                  <img class="tile__photo" src="assets/img/tile-travel.webp" alt="Snow-capped mountain peaks at sunrise">
+                  <span class="tile__label">Travel</span>
+                </span>
+                <span class="slide">
+                  <img class="tile__photo" src="assets/img/tile-tickets.webp" alt="A crowd at a live concert">
+                  <span class="tile__label">Tickets</span>
+                </span>
+                <span class="slide">
+                  <img class="tile__photo" src="assets/img/tile-experiences.webp" alt="Loungers beside a lit poolside at dusk">
+                  <span class="tile__label">Experiences</span>
+                </span>
+                <!-- clone of the first slide, so the wrap-around never jumps -->
+                <span class="slide" aria-hidden="true">
+                  <img class="tile__photo" src="assets/img/tile-travel.webp" alt="">
+                  <span class="tile__label">Travel</span>
+                </span>
+              </span>
+
+              <span class="tile__nav" aria-hidden="true">
+                <i class="dot is-on"></i><i class="dot"></i><i class="dot"></i>
+              </span>
+            </span>
+
+            <!-- next slide; hidden on the last slide, per Figma -->
+            <span class="peek peek--next" aria-hidden="true">
+              <img src="assets/img/tile-travel.webp" alt="" data-peek="0">
+              <img src="assets/img/tile-tickets.webp" alt="" data-peek="1">
+              <img src="assets/img/tile-experiences.webp" alt="" data-peek="2">
+            </span>
+          </span>
+
+          <span class="option__row">
+            <span class="radio" aria-hidden="true"></span>
+            <span class="option__wrap">
+              <span class="option__head">
+                <span class="option__titleline">
+                  <span class="option__title">Points</span>
+                  <span class="tag tag--rec">Recommended</span>
+                </span>
+                <span class="option__rate">100 points per $1</span>
+              </span>
+              <span class="option__desc">of eligible rewards, spendable in the marketplace</span>
+            </span>
+          </span>
+        </label>
+
+        <label class="option option--cashback" data-option="cashback">
+          <input class="option__input" type="radio" name="payout" value="cashback">
+          <span class="option__row">
+            <span class="radio" aria-hidden="true"></span>
+            <span class="option__wrap">
+              <span class="option__head">
+                <span class="option__titleline">
+                  <span class="option__title">Cashback</span>
+                </span>
+                <span class="option__rate">$0.60 per $1</span>
+              </span>
+              <span class="option__desc">of eligible rewards</span>
+            </span>
+          </span>
+        </label>
+
+      </div>
+
+      <div class="secondary">
+        <div class="example">
+          <span class="tag tag--example">Example</span>
+          <p class="example__text">For every <b>$100</b> in eligible rewards, receive <b>10,000</b> points or <b>$60</b> cashback.</p>
+        </div>
+        <div class="divider"></div>
+        <p class="footnote">Rewards are distributed monthly. <br class="br-wide">These rates apply to eligible reward dollars, not card spending.</p>
+      </div>
+    </section>
+
+    <section class="cta">
+      <a class="btn btn--lg" href="confirmation-points.html" data-cta-link><span class="btn__label" data-cta>Choose Points</span></a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__notches" aria-hidden="true">
+      <svg class="notch" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><path d="M0 0C0 44.1828 35.8172 80 80 80H0V0Z" fill="black"/></svg>
+      <svg class="notch" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><path d="M80 0C80 44.1828 44.1828 80 0 80H80V0Z" fill="black"/></svg>
+    </div>
+    <div class="footer__bar">
+      <img class="footer__mark" src="assets/img/wordmark-tria.svg" alt="Tria" width="58" height="30">
+    </div>
+  </footer>
+
+  <script src="assets/js/app.js?v=12"></script>
+</body>
+</html>

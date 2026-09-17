@@ -1,0 +1,515 @@
+/* =========================================================
+   Tria — rewards payout selection
+   Figma: Tria rewards flow / UI  (node 1-389)
+   Breakpoints: base = mobile 390, fluid to tablet 768,
+                desktop overrides from 1000px.
+   No scaling: containers flex, type and spacing stay fixed px.
+   ========================================================= */
+
+/* ---------- Fonts ---------- */
+@font-face{font-family:Geist;src:url(../fonts/Geist-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:Geist;src:url(../fonts/Geist-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:Geist;src:url(../fonts/Geist-SemiBold.woff2) format("woff2");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:Geist;src:url(../fonts/Geist-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+
+/* ---------- Tokens ---------- */
+:root{
+  --blue:#5b71ff;
+  --ink:#000;
+  --ink-soft:#404040;
+  --ink-menu:#222323;
+  --ink-foot:#6a6a75;
+  --glass:rgba(255,255,255,.75);
+  --hairline:rgba(0,0,0,.2);
+  --divider:rgba(0,0,0,.1);
+  --r-card:24px;
+  --r-tile:10px;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --ease-pop:cubic-bezier(.34,1.42,.64,1);
+  --t-state:.22s;      /* card / radio state change */
+  --t-copy:.15s;       /* hero + CTA copy cross-fade */
+  --t-resize:.24s;     /* headline height when the line count changes */
+  --t-hover:.18s;      /* hover lift / press */
+  --t-slide:.55s;      /* gallery slide */
+  --ease-slide:cubic-bezier(.65,0,.35,1);
+  --t-modal:.3s;       /* scrim + sheet */
+}
+
+/* ---------- Reset ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  min-height:100dvh;               /* mobile browsers, minus the chrome */
+  background:#fff;
+  color:var(--ink);
+  font-family:Geist,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-weight:500;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+.header,main,.footer{flex:none}
+/* On a short page the leftover space under the footer carries the footer's
+   black rather than the page white. Collapses to nothing once content fills
+   the viewport, so it never adds scroll. */
+body::after{
+  content:"";
+  flex:1 0 auto;
+  width:100%;
+  background:var(--ink);
+  position:relative;
+  z-index:1;
+}
+h1,h2,h3,p{margin:0}
+img,svg{display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+
+/* ---------- Background blobs ---------- */
+.bg-layer{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.bg{position:absolute;top:0;left:50%;transform:translateX(-50%);max-width:none}
+.bg--mobile{width:1400px;height:935px}
+.bg--desktop{width:3000px;height:2000px;display:none}
+
+/* ---------- Header ---------- */
+.header{
+  position:sticky;top:0;z-index:20;
+  width:100%;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+}
+.header__inner{
+  max-width:1280px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 26px;
+}
+.header__logo img{width:58.1px;height:21.0251px}
+.menu{display:flex;align-items:center;gap:9px;font-weight:400;font-size:11px;color:var(--ink-menu);white-space:nowrap}
+.menu a{transition:color .15s var(--ease)}
+.menu a:hover{color:var(--blue)}
+
+/* ---------- Page flow above the background ---------- */
+main,.footer{position:relative;z-index:1}
+
+/* ---------- Hero ---------- */
+.hero{
+  max-width:700px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  padding:8px 20px 23px;
+  text-align:center;
+}
+.hero__title{
+  width:100%;
+  font-weight:600;font-size:44px;line-height:1;letter-spacing:-1.32px;
+  color:var(--ink);
+  word-break:break-word;
+}
+.accent{color:var(--blue)}
+.hero__sub{width:100%;font-weight:500;font-size:14px;line-height:1.4;color:var(--ink-soft)}
+
+/* ---------- Content ---------- */
+.content{
+  max-width:600px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:0 20px 24px;
+}
+.options{display:flex;flex-direction:column;gap:16px;width:100%}
+
+/* ---------- Option card ----------
+   Both states keep border:0 / padding:2px, so the inner layout never moves.
+   Figma's 1px hairline and 2px selected border are drawn as stacked rings
+   that cross-fade — border-width itself can't be animated without a jump. */
+.option{
+  position:relative;
+  display:flex;flex-direction:column;align-items:flex-start;
+  width:100%;
+  padding:2px;                       /* = Figma 1px border + 1px pad, and 2px border */
+  border:0;
+  border-radius:var(--r-card);
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  overflow:hidden;
+  cursor:pointer;
+  -webkit-user-select:none;user-select:none;      /* the whole card is one hit target */
+  box-shadow:0 0 0 rgba(0,0,0,0);
+  transition:background-color var(--t-state) var(--ease),
+             box-shadow var(--t-hover) var(--ease),
+             transform var(--t-hover) var(--ease);
+}
+.option *{cursor:inherit}
+.option img{-webkit-user-drag:none;pointer-events:none}   /* photos must not start a drag */
+.option::before,
+.option::after{
+  content:"";
+  position:absolute;inset:0;z-index:2;
+  border-radius:inherit;pointer-events:none;
+  transition:opacity var(--t-state) var(--ease),border-color var(--t-state) var(--ease);
+}
+.option::before{border:1px solid var(--hairline);opacity:1}   /* resting hairline */
+.option::after{border:2px solid var(--ink);opacity:0}         /* selected ring */
+.option.is-selected{background:#fff}
+.option.is-selected::before{opacity:0}
+.option.is-selected::after{opacity:1}
+
+/* Hover / press — only on a card you can actually pick. Once an option is
+   selected it is inert: no lift, no shadow, no pointer. The gallery inside it
+   stays live (click advances it, hover pauses it), so it keeps its cursor.
+   Deliberately NOT wrapped in @media (hover:hover): hybrid touch laptops report
+   hover:none and would lose the affordance entirely. */
+.option:not(.is-selected):hover{
+  box-shadow:0 10px 28px rgba(0,0,0,.15);
+  transform:translateY(-2px);
+}
+.option:not(.is-selected):hover::before{border-color:rgba(0,0,0,.45)}
+.option:not(.is-selected):active{
+  box-shadow:0 2px 6px rgba(0,0,0,.12);
+  transform:translateY(0);
+  transition-duration:.08s;
+}
+.option.is-selected{cursor:default}
+.option.is-selected .tiles{cursor:pointer}
+.option__input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.option:has(.option__input:focus-visible){outline:2px solid var(--blue);outline-offset:3px}
+
+/* ---------- Photo gallery ----------
+   Figma geometry: strip inset 18 / 19, 120 tall; the neighbouring slides show as
+   8x100 slivers inset 9 (left) and 10 (right), dimmed to 75%. */
+.tiles{position:relative;display:block;width:100%;height:138px;flex:none}
+.tiles__strip{
+  position:absolute;left:18px;right:19px;top:18px;height:120px;
+  border-radius:var(--r-tile);
+  overflow:hidden;
+  background:#eee;
+}
+/* Grid columns at 100% overflow the track, so one -100% step == one slide.
+   transform is set from JS, not from a custom property inside calc(): an
+   unregistered custom property doesn't interpolate, so that version jumped. */
+.track{
+  display:grid;grid-auto-flow:column;grid-auto-columns:100%;
+  width:100%;height:100%;
+  transform:translateX(0);
+  transition:transform var(--t-slide) var(--ease-slide);
+}
+.track.is-snapping{transition:none}
+.slide{position:relative;display:block;height:120px;overflow:hidden;background:#eee}
+.tile__photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none}
+.tile__label{
+  position:absolute;left:15px;top:12px;
+  font-weight:600;font-size:16px;line-height:1.1;color:#fff;white-space:nowrap;
+  text-shadow:0 2px 4px rgba(0,0,0,.4);
+}
+.tile__nav{
+  position:absolute;bottom:0;left:calc(50% + .5px);transform:translateX(-50%);
+  display:flex;align-items:center;gap:7px;
+  padding:0 12px 12px;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));
+  z-index:1;
+}
+.dot{
+  display:block;width:5px;height:5px;border-radius:100px;
+  background:rgba(255,255,255,.5);
+  transition:width var(--t-slide) var(--ease-slide),background-color var(--t-slide) var(--ease);
+}
+.dot.is-on{width:18px;background:#fff}
+
+/* Slivers. All three photos are stacked and cross-faded, so no src swap flashes. */
+.peek{
+  position:absolute;top:28px;width:8px;height:100px;
+  background:#eee;overflow:hidden;
+  opacity:.75;
+  transition:opacity var(--t-slide) var(--ease);
+}
+.peek--prev{left:9px;border-radius:var(--r-tile) 0 0 var(--r-tile)}
+.peek--next{right:10px;border-radius:0 var(--r-tile) var(--r-tile) 0}
+.peek.is-empty{opacity:0}
+.peek img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none;
+  opacity:0;
+  transition:opacity var(--t-slide) var(--ease);
+}
+.peek img.is-on{opacity:1}
+
+/* radio row */
+.option__row{display:flex;align-items:flex-start;gap:8px;width:100%;padding:14px 18px 13px 13px}
+.radio{
+  position:relative;flex:none;width:24px;height:24px;border-radius:50%;
+  box-shadow:inset 0 0 0 0 rgba(0,0,0,0);
+  transition:box-shadow var(--t-state) var(--ease);
+}
+.radio::before{                       /* resting hairline ring */
+  content:"";position:absolute;inset:0;border-radius:50%;
+  border:1px solid var(--hairline);
+  transition:opacity var(--t-state) var(--ease);
+}
+.radio::after{                        /* the dot */
+  content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;
+  margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--ink);
+  opacity:0;transform:scale(.2);
+  transition:opacity .16s var(--ease),transform .24s var(--ease-pop);
+}
+.option.is-selected .radio{box-shadow:inset 0 0 0 2px var(--ink)}
+.option.is-selected .radio::before{opacity:0}
+.option.is-selected .radio::after{opacity:1;transform:scale(1)}
+.option__wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1 0 0;min-width:0}
+.option__head{display:flex;flex-direction:column;align-items:flex-start;gap:5px;width:100%}
+.option__titleline{display:flex;align-items:center;gap:9px;height:24px;width:100%}
+.option__title{
+  font-weight:600;font-size:19px;line-height:1.1;letter-spacing:-.19px;
+  color:var(--ink-soft);white-space:nowrap;
+  transition:color var(--t-state) var(--ease);
+}
+.option__rate{
+  width:100%;
+  font-weight:600;font-size:28px;line-height:1.05;letter-spacing:-.56px;
+  color:var(--ink-soft);word-break:break-word;
+  transition:color var(--t-state) var(--ease);
+}
+.option.is-selected .option__title,
+.option.is-selected .option__rate{color:var(--ink)}
+.option__desc{width:100%;font-weight:500;font-size:14px;line-height:1.4;color:var(--ink-soft)}
+
+/* ---------- Tags ---------- */
+.tag{
+  display:inline-flex;align-items:flex-start;flex:none;
+  padding:7px 10px 6px;border-radius:999px;
+  font-weight:600;font-size:11px;line-height:1;letter-spacing:.22px;
+  text-transform:uppercase;white-space:nowrap;
+}
+.tag--rec{background:var(--blue);color:#fff}
+.tag--example,.tag--soft{background:rgba(91,113,255,.2);color:var(--blue)}
+
+/* ---------- Secondary ---------- */
+.secondary{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+.example{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  width:100%;padding-top:16px;border-radius:20px;overflow:hidden;
+}
+.example__text{
+  width:100%;text-align:center;
+  font-weight:500;font-size:14px;line-height:1.4;color:var(--ink-soft);
+  word-break:break-word;
+}
+.example__text b{font-weight:700;color:var(--ink)}
+.divider{width:100%;height:1px;background:var(--divider)}
+.footnote{
+  width:100%;text-align:center;
+  font-weight:400;font-size:11px;line-height:1.4;color:var(--ink-foot);
+}
+
+/* ---------- CTA ---------- */
+.cta{max-width:600px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;align-items:center}
+.btn{
+  width:100%;
+  display:flex;align-items:center;justify-content:center;
+  padding:17px 24px 18px;
+  border:0;border-radius:999px;background:var(--ink);color:#fff;
+  font-weight:600;font-size:16px;line-height:1;
+  white-space:nowrap;cursor:pointer;
+  transition:background-color .16s var(--ease),transform .16s var(--ease);
+}
+.btn:hover{background:#1c1c1c}
+.btn:active{transform:scale(.99)}
+.btn:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+
+/* ---------- Footer ---------- */
+.footer{display:flex;flex-direction:column;align-items:center;width:100%;overflow:hidden}
+.footer__notches{display:flex;justify-content:space-between;width:100%;height:40px}
+.notch{width:40px;height:40px;flex:none}
+.footer__bar{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;padding:30px 0;background:var(--ink);
+}
+.footer__mark{width:57.6439px;height:30px}
+
+/* =========================================================
+   Flow pages — confirmation + returning-user preference
+   ========================================================= */
+.content--flow{gap:25px}
+.stack{display:flex;flex-direction:column;gap:16px;width:100%}
+
+/* "What happens next" */
+.next{display:flex;flex-direction:column;gap:12px;width:100%}
+.next__title{
+  width:100%;
+  font-weight:600;font-size:28px;line-height:1.05;letter-spacing:-.56px;color:var(--ink);
+}
+.step{display:flex;align-items:flex-start;gap:9px;width:100%}
+.step__num{
+  flex:none;display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:999px;
+  background:rgba(91,113,255,.2);color:var(--blue);
+  font-weight:600;font-size:14px;line-height:1;letter-spacing:.28px;
+  margin-bottom:4px;             /* Figma pads 4px under the numeral's box */
+}
+.step__text{
+  flex:1 0 0;min-width:0;padding-top:4px;
+  font-weight:500;font-size:14px;line-height:1.4;color:var(--ink-soft);
+}
+
+/* label / value rows, used in the status card and in the modal */
+.row{display:flex;align-items:flex-start;gap:4px;width:100%;font-size:14px;line-height:1.4}
+.row__label{flex:1 0 0;min-width:0;font-weight:500;color:var(--ink-soft)}
+.row__value{flex:none;white-space:nowrap;font-weight:600;color:var(--ink)}
+.row__value--accent{color:var(--blue)}
+
+/* the active-preference card (returning user) */
+.status{width:100%;border:2px solid var(--ink);border-radius:var(--r-card);background:#fff;overflow:hidden}
+.status__wrap{display:flex;flex-direction:column;gap:10px;width:100%;padding:14px 18px 13px}
+.status__head{display:flex;flex-direction:column;gap:4px;width:100%}
+.status__lines{display:flex;flex-direction:column;gap:5px;width:100%}
+.status__titleline{display:flex;align-items:center;gap:9px;height:24px;width:100%}
+.status__name{
+  flex:1 0 0;min-width:0;
+  font-weight:600;font-size:19px;line-height:1.1;letter-spacing:-.19px;color:var(--ink);
+}
+.status__rate{
+  width:100%;
+  font-weight:600;font-size:28px;line-height:1.05;letter-spacing:-.56px;color:var(--ink);
+}
+.status__desc{width:100%;font-weight:500;font-size:14px;line-height:1.4;color:var(--ink-soft)}
+
+/* the "Prefer X instead?" glass card */
+.promo{
+  width:100%;padding:1px;
+  border:1px solid var(--hairline);border-radius:var(--r-card);
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  overflow:hidden;
+}
+.promo__wrap{display:flex;flex-direction:column;gap:13px;width:100%;padding:14px 18px 13px}
+.promo__head{display:flex;flex-direction:column;gap:4px;width:100%}
+.promo__titleline{display:flex;flex-wrap:wrap;align-items:center;gap:8px 9px;width:100%}
+.promo__title{
+  font-weight:600;font-size:19px;line-height:1.1;letter-spacing:-.19px;color:var(--ink);
+}
+.promo__title--block{width:100%}
+.promo__title--inline{white-space:nowrap}
+.promo__body{width:100%;font-weight:500;font-size:14px;line-height:1.4;color:var(--ink-soft)}
+.promo__body b{font-weight:700;color:var(--ink)}
+
+/* button variants — all sit on the same 15/16 vertical rhythm as Figma */
+.btn--outline,.btn--blue,.btn--white,.btn--ghost{font-weight:500;padding:15px 24px 16px}
+.btn--outline{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn--outline:hover{background:rgba(0,0,0,.05)}
+.btn--blue{background:var(--blue);color:#f3faff}
+.btn--blue:hover{background:#4a61ff}
+.btn--white{background:#fff;color:var(--ink)}
+.btn--white:hover{background:#ececec}
+.btn--ghost{background:transparent;color:#fff;border:1.5px solid #fff}
+.btn--ghost:hover{background:rgba(255,255,255,.12)}
+
+/* ---------- Confirm-change modal ----------
+   Bottom sheet below 1000px (with the Figma grabber), centred dialog above it
+   (with the close button). Both are the same black card. */
+.modal{
+  position:fixed;inset:0;z-index:40;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding:20px;
+  visibility:hidden;
+  transition:visibility 0s linear var(--t-modal);
+}
+body.is-modal .modal{visibility:visible;transition:visibility 0s}
+.scrim{
+  position:absolute;inset:0;
+  background:rgba(255,255,255,.5);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  opacity:0;
+  transition:opacity var(--t-modal) var(--ease);
+}
+body.is-modal .scrim{opacity:1}
+.sheet{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  width:100%;max-width:560px;
+  background:var(--ink);border:2px solid var(--ink);border-radius:var(--r-card);
+  overflow:hidden;
+  opacity:0;transform:translateY(28px);
+  transition:opacity var(--t-modal) var(--ease),transform var(--t-modal) var(--ease-slide);
+}
+body.is-modal .sheet{opacity:1;transform:translateY(0)}
+.sheet__grab{
+  display:block;flex:none;
+  width:40px;height:4px;margin-top:8px;
+  border-radius:2px;background:rgba(255,255,255,.24);
+}
+.sheet__close{display:none}
+.sheet__wrap{display:flex;flex-direction:column;gap:10px;width:100%;padding:14px 18px 13px}
+.sheet__head{display:flex;flex-direction:column;gap:4px;width:100%}
+.sheet__titleline{display:flex;align-items:center;gap:9px;min-height:24px;width:100%}
+.sheet__title{
+  font-weight:600;font-size:19px;line-height:1.1;letter-spacing:-.19px;color:#fff;
+  white-space:nowrap;
+}
+.sheet__body{width:100%;font-weight:500;font-size:14px;line-height:1.4;color:rgba(255,255,255,.75)}
+.sheet__body b{font-weight:700;color:#fff}
+.sheet .divider{background:rgba(255,255,255,.2)}
+.sheet .row__label{color:rgba(255,255,255,.75)}
+.sheet .row__value{color:#fff}
+.sheet .row__value--accent{color:var(--blue)}
+.sheet__buttons{display:flex;flex-direction:column;gap:12px;width:100%;padding-top:10px}
+
+/* ---------- Copy cross-fade when the choice changes ----------
+   The headline can change line count, so its height is animated too;
+   overflow is only clipped for the length of that resize. */
+.hero__title,.hero__sub,.btn__label{
+  transition:opacity var(--t-copy) var(--ease),transform var(--t-copy) var(--ease);
+}
+.btn__label{display:block}
+body.is-swapping .hero__title,
+body.is-swapping .hero__sub,
+body.is-swapping .btn__label{opacity:0;transform:translateY(-6px)}
+.hero__title.is-resizing{
+  overflow:hidden;
+  transition:opacity var(--t-copy) var(--ease),transform var(--t-copy) var(--ease),
+             height var(--t-resize) var(--ease);
+}
+
+/* =========================================================
+   Desktop — from 1000px
+   ========================================================= */
+@media (min-width:1000px){
+  .bg--mobile{display:none}
+  .bg--desktop{display:block}
+
+  .header__inner{padding:16px 26px}
+  .header__logo img{width:110.667px;height:40.0479px}
+  .menu{gap:32px;font-size:16px}
+
+  .hero{padding:32px 20px 23px}
+  .hero__title{font-size:60px;letter-spacing:-1.8px}
+  .hero__sub{font-size:20px}
+
+  .br-wide{display:none}
+
+  .btn--lg{font-size:20px}
+
+  /* modal becomes a centred dialog */
+  .modal{align-items:center}
+  .sheet__grab{display:none}
+  .sheet__close{
+    display:flex;align-items:center;justify-content:center;
+    position:absolute;right:8px;top:8px;
+    width:26px;height:26px;padding:0;
+    border:0;border-radius:999px;background:#fff;
+    cursor:pointer;
+    transition:background-color var(--t-hover) var(--ease);
+  }
+  .sheet__close:hover{background:#ececec}
+  .sheet__close svg{width:26px;height:26px}
+
+  .footer__notches{height:80px}
+  .notch{width:80px;height:80px}
+  .footer__bar{padding:60px 0}
+  .footer__mark{width:192px;height:100px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important}
+}
