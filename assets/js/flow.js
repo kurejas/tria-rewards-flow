@@ -21,6 +21,7 @@
   }
 
   function open() {
+    sheetSwiped = false;          // a previous swipe must not swallow a click in here
     lastFocus = document.activeElement;
     scrollLock = window.scrollY;
     document.body.classList.add('is-modal');
@@ -64,6 +65,65 @@
       close();
     });
   });
+
+  /* Swipe the sheet down to dismiss — what the grabber promises. Only in the
+     bottom-sheet layout; above 1000px it is a centred dialog with a close button.
+     A gesture that moved swallows the click after it, so a swipe that starts on
+     a button never also presses it. */
+  var DOWN_START = 8;
+  var sheetDrag = null;
+  var sheetSwiped = false;
+
+  function isBottomSheet() {
+    return window.matchMedia('(max-width: 999px)').matches;
+  }
+
+  sheet.addEventListener('pointerdown', function (e) {
+    if (!isBottomSheet() || !document.body.classList.contains('is-modal')) return;
+    if (e.button !== undefined && e.button !== 0) return;
+    sheetSwiped = false;
+    sheetDrag = { x: e.clientX, y: e.clientY, dy: 0, moved: false, id: e.pointerId };
+  });
+
+  sheet.addEventListener('pointermove', function (e) {
+    if (!sheetDrag || e.pointerId !== sheetDrag.id) return;
+    var dy = e.clientY - sheetDrag.y;
+    var dx = e.clientX - sheetDrag.x;
+
+    if (!sheetDrag.moved) {
+      if (dy < DOWN_START || Math.abs(dx) > dy) return;   // downward gestures only
+      sheetDrag.moved = true;
+      sheet.classList.add('is-dragging');
+      try { sheet.setPointerCapture(e.pointerId); } catch (err) { /* pointer already gone */ }
+    }
+
+    e.preventDefault();
+    sheetDrag.dy = Math.max(0, dy);
+    sheet.style.transform = 'translateY(' + sheetDrag.dy + 'px)';
+  });
+
+  function endSheetDrag() {
+    if (!sheetDrag) return;
+    var moved = sheetDrag.moved;
+    var dy = sheetDrag.dy;
+    sheetDrag = null;
+    if (!moved) return;                      // a tap — leave it to the buttons
+
+    sheet.classList.remove('is-dragging');
+    sheetSwiped = true;
+    sheet.style.transform = '';               // spring back, or animate out on close
+    if (dy > Math.max(90, sheet.offsetHeight * 0.25)) close();
+  }
+
+  sheet.addEventListener('pointerup', endSheetDrag);
+  sheet.addEventListener('pointercancel', endSheetDrag);
+
+  sheet.addEventListener('click', function (e) {
+    if (!sheetSwiped) return;
+    e.preventDefault();
+    e.stopPropagation();                      // must not reach the button underneath
+    sheetSwiped = false;
+  }, true);
 
   document.addEventListener('keydown', function (e) {
     if (!document.body.classList.contains('is-modal')) return;

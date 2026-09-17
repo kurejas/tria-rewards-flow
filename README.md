@@ -43,11 +43,13 @@ rounding line boxes to whole pixels.
 ## Behaviour
 
 - **Gallery** (selection page) — autoplays every 4s, loops, pauses on hover, advances
-  on click. Neighbouring slides show as dimmed 8px slivers.
+  on click, and swipes both ways on touch (the track follows the finger and settles
+  on the nearest slide). Neighbouring slides show as dimmed 8px slivers.
 - **Option cards** — selecting one rewrites the headline, subline and CTA behind a
   short cross-fade, and animates the headline's height when the line count changes.
   A selected card is inert on hover; only its gallery stays live.
-- **Modal** — closes on the scrim, Escape, "Keep …" or the desktop ✕. Focus is trapped
+- **Modal** — as a bottom sheet it can be swiped down to dismiss; it also closes on
+  the scrim, Escape, "Keep …" or the desktop ✕. Focus is trapped
   and restored, page scroll is locked. The confirm button is a plain link, so the flow
   works with JavaScript disabled.
 - `prefers-reduced-motion` is honoured throughout.

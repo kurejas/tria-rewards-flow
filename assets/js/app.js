@@ -147,23 +147,30 @@
     sliver(peeks.next, at + 1);
   }
 
-  /* Jump from the clone back to the real first slide, unanimated. */
-  function snap() {
+  /* Move without animating. Index N holds a clone of slide 0, so jumping
+     between the two is invisible — which is what makes both wraps seamless. */
+  function jump(n) {
     track.classList.add('is-snapping');
-    i = 0;
-    place(0);
+    i = n;
+    place(n);
     void track.offsetWidth;                  // commit before the transition returns
     track.classList.remove('is-snapping');
   }
 
   function advance() {
-    if (i >= N) snap();                      // a click can land mid-wrap
+    if (i >= N) jump(0);                     // a click can land mid-wrap
     i += 1;
     paint();
   }
 
+  function retreat() {
+    if (i <= 0) jump(N);                     // same slide, other end of the track
+    i -= 1;
+    paint();
+  }
+
   track.addEventListener('transitionend', function (e) {
-    if (e.target === track && e.propertyName === 'transform' && i >= N) snap();
+    if (e.target === track && e.propertyName === 'transform' && i >= N) jump(0);
   });
 
   function awake() {
@@ -177,7 +184,72 @@
 
   root.addEventListener('mouseenter', function () { paused.hover = true; stop(); });
   root.addEventListener('mouseleave', function () { paused.hover = false; schedule(); });
-  root.addEventListener('click', function () { advance(); schedule(); });
+
+  /* Drag / swipe. Pointer events cover touch, pen and mouse. The track follows
+     the finger, then settles on the nearest slide. A gesture that actually moved
+     swallows the click that follows it, so a swipe never also counts as a tap. */
+  var DRAG_START = 8;                        // px before we call it a drag
+  var drag = null;
+  var swiped = false;
+
+  function threshold() {
+    return Math.max(40, root.offsetWidth * 0.18);
+  }
+
+  root.addEventListener('pointerdown', function (e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    if (i >= N) jump(0);                     // normalise before dragging
+    swiped = false;
+    drag = { x: e.clientX, y: e.clientY, dx: 0, moved: false, id: e.pointerId };
+  });
+
+  root.addEventListener('pointermove', function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var dx = e.clientX - drag.x;
+    var dy = e.clientY - drag.y;
+
+    if (!drag.moved) {
+      if (Math.abs(dx) < DRAG_START || Math.abs(dx) <= Math.abs(dy)) return;  // let the page scroll
+      drag.moved = true;
+      stop();                                // autoplay yields to the hand
+      track.classList.add('is-dragging');
+      try { root.setPointerCapture(e.pointerId); } catch (err) { /* pointer already gone */ }
+    }
+
+    e.preventDefault();
+    drag.dx = dx;
+    track.style.transform = 'translateX(calc(' + (i * -100) + '% + ' + dx + 'px))';
+  });
+
+  function endDrag() {
+    if (!drag) return;
+    var moved = drag.moved;
+    var dx = drag.dx;
+    drag = null;
+    if (!moved) return;                      // a tap — leave it to the click handler
+
+    track.classList.remove('is-dragging');
+    swiped = true;
+
+    if (dx <= -threshold()) advance();
+    else if (dx >= threshold()) retreat();
+    else paint();                            // not far enough: settle back
+    schedule();
+  }
+
+  root.addEventListener('pointerup', endDrag);
+  root.addEventListener('pointercancel', endDrag);
+
+  root.addEventListener('click', function (e) {
+    if (swiped) {                            // the gesture already moved the gallery
+      e.preventDefault();
+      e.stopPropagation();                   // and must not reach the option label
+      swiped = false;
+      return;
+    }
+    advance();
+    schedule();
+  });
 
   document.addEventListener('visibilitychange', function () {
     paused.hidden = document.hidden;
