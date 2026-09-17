@@ -68,8 +68,10 @@ assets/
 ## Fonts
 
 Set in **Geist**, self-hosted as woff2. Geist is published by Vercel under the
-SIL Open Font License 1.1 — if you redistribute this repo, add the upstream
-`OFL.txt` alongside the font files.
+SIL Open Font License 1.1; the licence travels with the fonts in
+[`assets/fonts/OFL.txt`](assets/fonts/OFL.txt), copied verbatim from
+[vercel/geist-font](https://github.com/vercel/geist-font). Keep it alongside the
+font files if you redistribute this.
 
 ## Images
 
