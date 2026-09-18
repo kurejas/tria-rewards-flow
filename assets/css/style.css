@@ -390,7 +390,7 @@ main,.footer{position:relative;z-index:1}
   font-weight:600;font-size:19px;line-height:1.1;letter-spacing:-.19px;color:var(--ink);
 }
 .promo__title--block{width:100%}
-.promo__title--inline{white-space:nowrap}
+.promo__title--inline{white-space:normal}   /* one line at 390 as in Figma; wraps rather than clips on narrower phones */
 .promo__body{width:100%;font-weight:500;font-size:14px;line-height:1.4;color:var(--ink-soft)}
 .promo__body b{font-weight:700;color:var(--ink)}
 
